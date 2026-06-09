@@ -22,6 +22,9 @@ STEPS = [
     ("7", "post", False),
 ]
 
+PER_EPISODE_LIMIT = 650
+CHANNEL_INDEX = Path("projects") / "vbible-students" / "episodes-index.json"
+
 
 def project_dir(slug):
     return Path.cwd() / "projects" / slug
@@ -105,10 +108,68 @@ def cmd_set_output(args):
     s = load(args.slug)
     if s is None:
         return 2
+    if not args.no_verify and not Path(args.file).exists():
+        print(f"output file does not exist: {args.file} (use --no-verify to override)",
+              file=sys.stderr)
+        return 5
     step = s["steps"][args.step]
     step["status"] = "done"
     step["output"] = args.file
     _atomic_write(args.slug, s)
+    return 0
+
+
+def _clips_credits(slug):
+    """Per-cut + total credits, read fresh from clips.json (the SSOT). No
+    separate ledger -> no drift with the render record."""
+    cp = project_dir(slug) / "assets" / "clips.json"
+    if not cp.exists():
+        return None
+    clips = json.loads(cp.read_text()).get("clips", [])
+    rows = [(c.get("cut"), c.get("type"), float(c.get("creditsUsed") or 0)) for c in clips]
+    return rows, sum(r[2] for r in rows)
+
+
+def cmd_credits(args):
+    res = _clips_credits(args.slug)
+    if res is None:
+        print(f"no clips.json for '{args.slug}'", file=sys.stderr)
+        return 2
+    rows, total = res
+    for cut, typ, cr in rows:
+        if cr:
+            print(f"  {cut}\t{typ}\t{cr:g}")
+    over = total > PER_EPISODE_LIMIT
+    print(f"total\t{total:g} / {PER_EPISODE_LIMIT}" + ("\tOVER LIMIT" if over else ""))
+    return 7 if over else 0
+
+
+def cmd_finalize(args):
+    """Record a completed episode into the channel index — measured values only
+    (slug, logline, dates, credits, runtime, steps done). No fabricated metrics."""
+    s = load(args.slug)
+    if s is None:
+        return 2
+    credits = _clips_credits(args.slug)
+    cp = project_dir(args.slug) / "assets" / "clips.json"
+    runtime = json.loads(cp.read_text()).get("totalRuntimeSec") if cp.exists() else None
+    entry = {
+        "slug": args.slug,
+        "logline": s.get("logline"),
+        "createdAt": s.get("createdAt"),
+        "completedAt": datetime.now().isoformat(timespec="seconds"),
+        "credits": credits[1] if credits else None,
+        "runtimeSec": runtime,
+        "stepsDone": [n for n, st in s["steps"].items() if st["status"] == "done"],
+    }
+    idx = CHANNEL_INDEX
+    data = json.loads(idx.read_text()) if idx.exists() else {"episodes": []}
+    data["episodes"] = [e for e in data["episodes"] if e.get("slug") != args.slug] + [entry]
+    idx.parent.mkdir(parents=True, exist_ok=True)
+    tmp = idx.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+    os.replace(tmp, idx)
+    print(str(idx))
     return 0
 
 
@@ -175,7 +236,17 @@ def build_parser():
     ps.add_argument("slug")
     ps.add_argument("step")
     ps.add_argument("--file", required=True)
+    ps.add_argument("--no-verify", action="store_true",
+                    help="skip output-file existence check")
     ps.set_defaults(func=cmd_set_output)
+
+    pc = sub.add_parser("credits")
+    pc.add_argument("slug")
+    pc.set_defaults(func=cmd_credits)
+
+    pf = sub.add_parser("finalize")
+    pf.add_argument("slug")
+    pf.set_defaults(func=cmd_finalize)
 
     pa = sub.add_parser("approve")
     pa.add_argument("slug")

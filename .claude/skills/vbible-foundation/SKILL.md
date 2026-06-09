@@ -77,9 +77,9 @@ projects/vbible-ep-XX-<slug>/          # 에피소드별 워크스페이스 (slu
 | 4 prompt | — | vbible-visual-director | i2v 컷 한국어 프롬프트(립싱크 컷은 제외) |
 | 5 render | ✓ | vbible-render-engineer | 한국어 TTS + wan2_7 립싱크 + seedance i2v (비용 게이트) |
 | 6 curate | ✓ | (오케스트레이터) | 컷 선별 |
-| 7 post | — | (오케스트레이터) | 합성·자막·BGM·업로드 메타 |
+| 7 post | — | (오케스트레이터) | `lib/assemble.py` 자동 합성(PREVIEW.mp4 + .srt, i2v 무음+TTS 먹싱 = 불변식 2-1 기계 강제) → NLE 마무리·업로드 메타 |
 
-**vbible-qa**는 단계 2·3·5 직후 점진적으로 경계면을 검증한다(존재 확인이 아니라 불변식 위반 탐지).
+**QA 2층:** 단계 2·3·5 직후 결정론 검사 `lib/qa_checks.py --stage N`(elementId·화자1명/컷·한국어·예산·9:16/길이)가 먼저, 통과 시 **vbible-qa**(opus)가 지각 드리프트(안경·머리색·스타일)를 이미지에서 판단한다. 존재 확인이 아니라 불변식 위반 탐지.
 
 ## 6. 자가 점검 (모든 에이전트 공통)
 - [ ] reference-media.json을 **이번 작업에서 새로 Read** 했는가? (기억/복사본 사용 금지)

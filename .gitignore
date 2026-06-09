@@ -8,6 +8,11 @@ $RECYCLE.BIN/
 # Runtime state (managed by lib/state.py — regenerated per run)
 **/state.json
 **/state.json.bak
+projects/vbible-students/episodes-index.json
+
+# Python bytecode
+__pycache__/
+*.pyc
 
 # Agent / tool runtime dirs
 .omc/
