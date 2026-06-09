@@ -1,0 +1,245 @@
+{
+  "meta": {
+    "project": "V-Bible for Students",
+    "slug": "vbible-students",
+    "purpose": "5인 반복 캐릭터 얼굴·의상·음성 일관성 고정용 참조 시트",
+    "aspectRatio": "9:16",
+    "artStyle": "clean soft-anime illustration, warm muted earth-tone palette, gentle lighting, no text, no logo",
+    "narratorDefault": "시온 (1인칭 학생 시점)",
+    "ttsEngine": "ElevenLabs (Korean) — 실제 보이스 ID 배정은 렌더 단계에서 확정",
+    "dialoguePolicy": {
+      "language": "ko",
+      "rule": "모든 인물 대사·나레이션은 한국어. 예외 없음.",
+      "engine": "ElevenLabs eleven_multilingual_v2 (key: ~/.config/hyperframes/.env ELEVENLABS_API_KEY, python3 urllib POST — curl 차단됨)",
+      "audioSource": "캐릭터별 한국어 TTS 트랙. 영상 모델 자동 오디오(generate_audio/sound) 사용 금지 — 한국어 대사 보장 못 함.",
+      "videoAudio": "generate_video는 sound=off / generate_audio 미지정으로 무음 생성 후 TTS 합성",
+      "keyStatus": "OK 2026-06-09 — ElevenLabs 키 교체·검증 완료(eleven_multilingual_v2 한국어 TTS 200). 헬퍼: scripts/set-eleven-key.sh.",
+      "voiceIdStatus": "확정 2026-06-09 — 5인 voiceId 배정 완료(사용자 승인: 시온 Will, 엄마 Sarah로 교체). 각 ref에 voiceId/voiceName/voiceSample 기록. 계정 보이스 31개(/v1/voices 정상)에서 추후 교체 가능.",
+      "voiceSettingsNote": "stability/similarity는 캐릭터별 조정: 시온0.45 엄마0.5 하은0.35 도현0.5 민준0.3 (활기형 낮은 stability).",
+      "higgsfieldAudioAssets": "5인 보이스 샘플 Higgsfield 오디오 애셋 업로드 완료(2026-06-09, status=uploaded). 각 ref.voiceSampleMediaId = audio media_id. show_medias(type=audio)로 조회 가능. 단 양산 시 씬별 실제 대사는 매번 새 TTS→media_upload(type=audio)→wan2_7 audio로 사용(샘플은 보이스 참조/확인용)."
+    },
+    "relationships": {
+      "family": ["시온", "엄마", "하은"],
+      "friends": ["도현", "민준"],
+      "note": "시온=장남/오빠, 하은=막내 여동생, 엄마=시온·하은의 어머니. 도현·민준=시온의 학교 친구."
+    },
+    "styleLock": "clean soft-anime illustration, consistent line weight, warm muted earth-tone palette, soft diffused lighting, gentle expressions, vertical 9:16 framing, no on-screen text — 모든 컷에 동일 적용",
+    "negativePrompt": "text, letters, captions, watermark, logo, signature, extra fingers, deformed hands, extra characters, duplicated face, style drift, photorealistic skin, harsh shadows, oversaturated colors, nudity",
+    "mcpUploadStatus": "done — 2026-06-09 Higgsfield MCP 업로드 완료. 5개 ref.mediaIds 채움 (image, status=uploaded).",
+    "consistencyMethod": "Higgsfield Elements (Soul 미사용). Soul V2는 인물당 5~20장·단일 인물·gen당 1 soul_id 제약으로 다중 인물 내러티브에 부적합 → Elements 채택.",
+    "elementUsage": "프롬프트에 <<<elementId>>> 임베드 시 백엔드가 해당 인물 이미지 자동 주입(@elementName으로 치환). 한 컷 다중 인물은 placeholder 여러 개 배치. 예: '<<<c3af5fc8-8135-4639-a122-61b4cc898408>>> 와 <<<21283476-f59f-4de2-aa2e-ae487b0afdb2>>> 가 식탁에 앉아 대화'.",
+    "elementSupportedModels": ["nano_banana_2", "nano_banana_flash", "gpt_image_2", "seedream_v4_5", "seedream_v5_lite", "cinematic_studio_2_5"],
+    "soloKeyframes": {
+      "note": "2026-06-09 nano_banana_2(→flash) 1k 9:16 생성. Elements 일관성 검증 통과(도현 안경 유지). 인물 고정용 베이스라인.",
+      "시온": "keyframes/solo_sion.png",
+      "엄마": "keyframes/solo_eomma.png",
+      "하은": "keyframes/solo_haeun.png",
+      "도현": "keyframes/solo_dohyun.png",
+      "민준": "keyframes/solo_minjun.png"
+    },
+    "multiCharTest": "test-shots/test_sion_haeun.png (시온+하은 거실, 다중 placeholder 검증)",
+    "lipsyncPipeline": {
+      "status": "PROVEN 2026-06-09 (say 무료 오디오로 수직 슬라이스 검증)",
+      "flow": "한국어 TTS → media_upload(type=audio) → media_confirm → generate_video(model=wan2_7, medias:[{start_image:토킹헤드 키프레임},{audio:TTS media_id}])",
+      "model": "wan2_7",
+      "verified": "오디오 한국어 보존(transcribe='나는 오늘 하나님이 나를 사랑하신다는 걸 처음으로 느꼈습니다.') + 입모양 동기화 + 시온 정체성/스타일 유지",
+      "costCredits720p5s": 7.5,
+      "rule": "립싱크는 화자 1명/컷 → 대화는 화자별 토킹헤드(클로즈업, 얼굴 프레이밍) 단독 컷으로 분리. 다중 인물 동시 컷은 립싱크 불가.",
+      "keyframeNote": "립싱크용 키프레임은 클로즈업 head&shoulders, 입 약간 벌린 발화 포즈로 생성(solo turnaround sheet 부적합).",
+      "ttsSource": "검증은 macOS say -v Yuna(품질 낮음). 운영은 Voicebox 로컬(Qwen MLX 등) 또는 ElevenLabs 키 복구 시.",
+      "sampleClip": "clips/lipsync_sion_say_5s.mp4",
+      "sampleClipEleven": "clips/lipsync_sion_eleven_5s.mp4 (ElevenLabs Liam, 자연스러운 음성 — 운영 권장)",
+      "talkingHeadKeyframe": "cfe4355a job (시온 클로즈업)"
+    },
+    "i2vPipeline": {
+      "note": "2026-06-09 키프레임→영상 검증. seedance_2_0 std 720p 9:16 5s. 3프레임 인물 일관성 유지·스타일 드리프트 없음. start_image=키프레임 URL/job_id, role=start_image. ⚠ 양산 시 sound=off로 무음 생성 — 한국어 대사는 ElevenLabs TTS 별도 트랙(dialoguePolicy 참조). 테스트 클립 clip_sion_haeun_5s.mp4의 자동 오디오는 한국어 아님(폐기 대상).",
+      "model": "seedance_2_0",
+      "sampleClip": "clips/clip_sion_haeun_5s.mp4",
+      "costCreditsStd5s720p": 22.5
+    },
+    "sourceImages": {
+      "시온": "시온.jpeg",
+      "엄마": "엄마.jpeg",
+      "하은": "여동생.jpeg",
+      "도현": "학생B.jpeg",
+      "민준": "학생C.jpeg"
+    }
+  },
+  "refs": [
+    {
+      "name": "시온",
+      "roleLabel": "주인공 / 기본 내레이터",
+      "relationship": "가족 — 장남(오빠). 하은의 오빠, 엄마의 아들",
+      "mediaIds": ["65f215d0-cd5c-498e-893e-29a7d6c99e27"],
+      "elementId": "c3af5fc8-8135-4639-a122-61b4cc898408",
+      "elementName": "sion",
+      "localPath": "시온.jpeg",
+      "continuityKey": "베이지 오버핏 후드 + 다크브라운 흐트러진 단발머리 + 헤이즐눈",
+      "characterSheet": {
+        "role": "주인공 / 1인칭 학생 내레이터",
+        "ageLook": "한국 남학생, 약 16세",
+        "hair": "짧고 부드럽게 흐트러진 다크브라운, 자연스러운 앞머리",
+        "eyes": "따뜻한 헤이즐/올리브 톤",
+        "expression": "잔잔하고 사려 깊은 옅은 미소, 차분한 눈빛",
+        "outfit": "오버핏 토프/베이지 후드티(끈+캥거루 앞주머니) + 다크 차콜 슬림 팬츠",
+        "footwear": "베이지/탄 스니커즈",
+        "props": "없음 (필요 시 노트·성경)",
+        "personality": "진솔, 내성적이나 따뜻함, 생각이 깊음",
+        "promptAnchor": "Korean teenage boy ~16, soft tousled short dark-brown hair, warm hazel eyes, gentle calm half-smile, oversized taupe/beige drawstring hoodie with front pocket, dark charcoal slim pants, beige sneakers, clean soft-anime illustration style",
+        "forbiddenVariations": "머리색·길이 변경 금지, 후드 색 변경 금지, 안경 추가 금지, 성인화 금지, 화면 내 글자 금지"
+      },
+      "voiceTag": "voice_sion",
+      "voiceId": "bIHbv24MWmeRgasZH58o",
+      "voiceName": "Will",
+      "voiceSample": "tts/voices/sion_Will.mp3",
+      "voiceSampleMediaId": "9026680a-670f-423c-835b-3bfc6cc85c6f",
+      "voiceProfile": {
+        "texture": "차분하고 또렷한 10대 후반 남성, 약간 낮은 톤",
+        "pace": "중간",
+        "emotionRange": "따뜻함~진지함 (절제된 폭)",
+        "habits": "담백한 단정형 종결('~입니다','~됩니다'), 1인칭 고백체",
+        "forbidden": "과장된 설교톤, 빠른 랩, 들뜬 하이텐션"
+      }
+    },
+    {
+      "name": "엄마",
+      "roleLabel": "어머니",
+      "relationship": "가족 — 시온·하은의 어머니",
+      "mediaIds": ["4fd13da4-b7ef-4794-97d6-66204e3bf12f"],
+      "elementId": "6d8015a6-e737-4f76-8660-0aa37f2f31f3",
+      "elementName": "eomma",
+      "localPath": "엄마.jpeg",
+      "continuityKey": "턱선 브라운 보브 + 크림 7부상의 + 토프 롱스커트",
+      "characterSheet": {
+        "role": "어머니 (가정·신앙의 따뜻한 중심)",
+        "ageLook": "한국 여성, 약 40대 초반",
+        "hair": "턱선 길이 브라운 보브, 사이드 파트",
+        "eyes": "따뜻한 브라운",
+        "expression": "부드러운 모성적 미소, 안정감",
+        "outfit": "크림/베이지 루즈 7부소매 상의 + 토프/모브 롱스커트",
+        "footwear": "플랫 샌들",
+        "props": "없음",
+        "personality": "따뜻함, 포용, 차분한 권면",
+        "promptAnchor": "Korean mother ~early 40s, chin-length brown bob with side part, warm brown eyes, soft maternal smile, loose cream-beige three-quarter-sleeve top, taupe long skirt, flat sandals, warm gentle presence, clean soft-anime illustration style",
+        "forbiddenVariations": "머리 길이(보브) 변경 금지, 의상 실루엣 변경 금지, 젊은 학생화 금지, 화면 내 글자 금지"
+      },
+      "voiceTag": "voice_mom",
+      "voiceId": "EXAVITQu4vr4xnSDxMaL",
+      "voiceName": "Sarah",
+      "voiceSample": "tts/voices/eomma_Sarah.mp3",
+      "voiceSampleMediaId": "f9ba23f8-7645-4eb5-8b5d-25b3d4c481d8",
+      "voiceProfile": {
+        "texture": "따뜻하고 부드러운 40대 여성",
+        "pace": "느림~중간",
+        "emotionRange": "다정함~위로",
+        "habits": "다정한 권유형('~란다','~보자')",
+        "forbidden": "날카롭거나 차가운 톤, 빠른 속도"
+      }
+    },
+    {
+      "name": "하은",
+      "roleLabel": "여동생",
+      "relationship": "가족 — 막내 여동생. 시온의 동생",
+      "mediaIds": ["2b765327-d7e9-4557-9917-3e202bebb3b6"],
+      "elementId": "21283476-f59f-4de2-aa2e-ae487b0afdb2",
+      "elementName": "haeun",
+      "localPath": "여동생.jpeg",
+      "continuityKey": "네이비 점퍼스커트 + 흰 블라우스 + 흰 무릎양말",
+      "characterSheet": {
+        "role": "여동생 (순수한 질문자 — 이야기의 도입 질문 담당)",
+        "ageLook": "한국 여자아이, 약 12세",
+        "hair": "턱~어깨 길이 브라운 보브",
+        "eyes": "맑은 그레이 톤",
+        "expression": "조용하고 차분한, 약간 수줍은",
+        "outfit": "흰 카라 긴소매 블라우스 + 네이비 점퍼스커트(피나포어)",
+        "footwear": "흰 무릎양말 + 흰 스니커즈",
+        "props": "없음",
+        "personality": "내성적, 호기심, 순수",
+        "promptAnchor": "Korean girl ~12, brown chin-length bob, calm gray eyes, quiet reserved expression, white collared long-sleeve blouse under navy pinafore jumper dress, white knee-high socks, white sneakers, clean soft-anime illustration style",
+        "forbiddenVariations": "성인화 금지, 점퍼스커트 색(네이비) 변경 금지, 화장·성숙 메이크업 금지, 화면 내 글자 금지"
+      },
+      "voiceTag": "voice_haeun",
+      "voiceId": "jBpfuIE2acCO8z3wKNLl",
+      "voiceName": "Gigi",
+      "voiceSample": "tts/voices/haeun_Gigi.mp3",
+      "voiceSampleMediaId": "3290694a-b5cf-40f1-af29-ec9307b79a19",
+      "voiceProfile": {
+        "texture": "맑고 여린 어린 여성",
+        "pace": "약간 느림",
+        "emotionRange": "호기심~수줍음",
+        "habits": "짧은 질문형('왜 그래, 오빠?','정말?')",
+        "forbidden": "어른스러운 저음, 과장된 연기톤"
+      }
+    },
+    {
+      "name": "도현",
+      "roleLabel": "친구 (사색형)",
+      "relationship": "친구 — 시온의 학교 친구. 사색·분석형",
+      "mediaIds": ["360a8300-1178-4e08-8c0b-9b81d7cd0171"],
+      "elementId": "4ac11a0f-cafc-4259-affb-1fec64c3a06c",
+      "elementName": "dohyun",
+      "localPath": "학생B.jpeg",
+      "continuityKey": "검은 사각 안경(필수) + 네이비 브이넥 니트 + 흰 카라셔츠",
+      "characterSheet": {
+        "role": "친구 (사색형 — 깊이 있는 질문 담당)",
+        "ageLook": "한국 남학생, 약 16~17세",
+        "hair": "다크브라운, 약간 헝클어진 단정한 컷",
+        "eyes": "브라운",
+        "expression": "차분하고 진지한, 절제된",
+        "outfit": "흰 카라셔츠 위 네이비/차콜 브이넥 니트 + 토프/브라운 슬랙스",
+        "footwear": "다크브라운 슈즈",
+        "props": "검은 얇은 사각 안경 (항상 착용 — 핵심 식별자)",
+        "personality": "사색적, 신중, 분석형",
+        "promptAnchor": "Korean teenage boy ~16, dark-brown slightly messy neat hair, brown eyes, thin black rectangular glasses, navy V-neck sweater over white collared shirt, taupe trousers, dark brown shoes, studious reserved demeanor, clean soft-anime illustration style",
+        "forbiddenVariations": "안경 제거 절대 금지(핵심 식별자), 니트 색(네이비) 변경 금지, 하이텐션 표정 금지, 화면 내 글자 금지"
+      },
+      "voiceTag": "voice_dohyun",
+      "voiceId": "TxGEqnHWrfWFTfGW9XjX",
+      "voiceName": "Josh",
+      "voiceSample": "tts/voices/dohyun_Josh.mp3",
+      "voiceSampleMediaId": "07bdac89-687c-4c4d-ae42-e5c241c09216",
+      "voiceProfile": {
+        "texture": "차분하고 사색적인 남학생",
+        "pace": "중간~느림",
+        "emotionRange": "진중함 (좁은 폭)",
+        "habits": "되묻는 사고형('그럼 이건 어떻게…')",
+        "forbidden": "시끄럽고 들뜬 톤, 빠른 속도"
+      }
+    },
+    {
+      "name": "민준",
+      "roleLabel": "친구 (활기형)",
+      "relationship": "친구 — 시온의 학교 친구. 분위기 환기·공감형",
+      "mediaIds": ["e79ee7ca-1171-4330-bb23-cee4bfa7c534"],
+      "elementId": "675e8e85-42cc-4081-847b-65f2051decc7",
+      "elementName": "minjun",
+      "localPath": "학생C.jpeg",
+      "continuityKey": "카멜 라운드 니트 + 밝은 갈색 볼륨 머리 + 환한 미소",
+      "characterSheet": {
+        "role": "친구 (활기형 — 분위기 환기·공감 담당)",
+        "ageLook": "한국 남학생, 약 15~16세",
+        "hair": "밝은~중간 브라운, 흐트러진 볼륨감",
+        "eyes": "브라운",
+        "expression": "밝고 활짝 웃는, 에너지 넘침",
+        "outfit": "흰 카라셔츠 위 카멜/탄 라운드넥 니트 + 다크 네이비 롤업 슬림 진",
+        "footwear": "크림/베이지 스니커즈",
+        "props": "없음",
+        "personality": "밝음, 외향, 공감력 높음",
+        "promptAnchor": "Korean teenage boy ~15, light-brown tousled voluminous hair, brown eyes, bright cheerful wide grin, camel crewneck sweater over white collared shirt, dark navy cuffed slim jeans, cream sneakers, energetic friendly vibe, clean soft-anime illustration style",
+        "forbiddenVariations": "니트 색(카멜) 변경 금지, 머리색 어둡게 변경 금지, 무표정/우울 표정 금지, 화면 내 글자 금지"
+      },
+      "voiceTag": "voice_minjun",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie",
+      "voiceSample": "tts/voices/minjun_Charlie.mp3",
+      "voiceSampleMediaId": "498ab320-256f-47aa-895a-37c6ddc8962a",
+      "voiceProfile": {
+        "texture": "밝고 활기찬 남학생",
+        "pace": "약간 빠름",
+        "emotionRange": "활기~공감 (넓은 폭)",
+        "habits": "감탄·맞장구('와 진짜?','맞아맞아')",
+        "forbidden": "무기력/단조, 저음 내레이션톤"
+      }
+    }
+  ]
+}

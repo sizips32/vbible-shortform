@@ -1,0 +1,37 @@
+# OS / editor
+.DS_Store
+**/.DS_Store
+.localized
+.aider*
+$RECYCLE.BIN/
+
+# Runtime state (managed by lib/state.py — regenerated per run)
+**/state.json
+**/state.json.bak
+
+# Agent / tool runtime dirs
+.omc/
+.omx/
+.codex/
+.sisyphus/
+.claude/settings.local.json
+
+# Per-episode workspaces (generated outputs of vbible-pipeline)
+projects/vbible-ep-*/
+
+# Channel-level generated media (keep reference-media.json, RESUME.md, scripts/)
+projects/vbible-students/assets/clips/
+projects/vbible-students/assets/keyframes/
+projects/vbible-students/assets/tts/
+projects/vbible-students/assets/test-shots/
+projects/vbible-students/_inbox/
+
+# Generated media (backstop — no source media tracked)
+*.mp4
+*.mov
+*.mp3
+*.wav
+
+# Scratch
+_workspace*/
+_gen_tts.py
